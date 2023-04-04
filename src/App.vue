@@ -5,17 +5,21 @@ import { useStore } from "./composable/useStore";
 import Table from "./components/TheTable.vue";
 import TableRow from "./components/TableRow.vue";
 import TableEmptyRow from "./components/TableEmptyRow.vue";
+import TableAverage from './components/TableAverage.vue'
 
 const { getData, companies, noQuoteCompanies } = useStore();
 
-onMounted(() => {
-  getData();
+
+onMounted(async () => {
+  await getData();
+ 
 });
 </script>
 
 <template>
   <div id="app" class="container p-6">
-    <TableFilters />
+
+     <TableFilters />
 
     <Table>
       <TableRow
@@ -28,6 +32,7 @@ onMounted(() => {
         :key="company+key2"
         :company="company"
       />
+      <TableAverage/>
     </Table>
   </div>
 </template>

@@ -1,7 +1,8 @@
 <script setup>
 import { useStore } from "@/composable/useStore";
-import { Bold, ChevronDown, ChevronUp } from "vue-icon-packs/ti";
-defineProps({
+import TableValueColumn from "./TableValueColumn.vue";
+import { ChevronDown, ChevronUp } from "vue-icon-packs/ti";
+const props = defineProps({
   date: {
     type: String,
     default: null,
@@ -10,8 +11,8 @@ defineProps({
     type: String,
     default: null,
   },
-  quote: {
-    type: Object,
+  quotes: {
+    type: Array,
     required: true,
   },
   canToggle: {
@@ -26,7 +27,13 @@ defineProps({
 
 defineEmits(["toggle"]);
 
-const { selectedYears } = useStore();
+const { selectedYears, selectedDisplay } = useStore();
+
+const getValue = (year, CouponType) => {
+  return props.quotes.find((quote) => {
+    return quote.CouponType == CouponType && quote.Years === year;
+  });
+};
 </script>
 
 <template>
@@ -49,26 +56,8 @@ const { selectedYears } = useStore();
       v-for="(year, keyYear) in selectedYears"
       :key="keyYear"
     >
-      <div
-        class="column has-text-centered is-size-7"
-        :class="{
-          'has-background-warning-light':
-            quote.Years?.['Year' + year]?.FIX?.isMinimum,
-        }"
-      >
-        {{
-          quote?.Years?.["Year" + year]
-            ? quote.Years?.["Year" + year]?.FIX?.value
-            : ""
-        }}
-      </div>
-      <div class="column has-text-centered is-size-7">
-        {{
-          quote?.Years?.["Year" + year]
-            ? quote.Years?.["Year" + year]?.FRN?.value
-            : ""
-        }}
-      </div>
+      <TableValueColumn :quote="getValue(year, 'FIX')" :display="selectedDisplay"/>
+      <TableValueColumn :quote="getValue(year, 'FRN')" :display="selectedDisplay"/>
     </div>
   </div>
 </template>

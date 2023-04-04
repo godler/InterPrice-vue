@@ -5,7 +5,6 @@ import { computed, ref, watch } from "vue";
 import TableSubRow from "./TableSubRow.vue";
 import _ from "lodash";
 
-import parseQuotes from "../utils/parseQuotes";
 
 const { selectedDisplay, currentCurrency, selectedYears } = useStore();
 
@@ -20,28 +19,30 @@ const isOpen = ref(false);
 
 const dateString = computed(() => {
   if (!props.company.DateSent) return;
-return parseDate(props.company.DateSent)
-});
-
-const quotes = computed(() => {
-  return parseQuotes(
-    props.company.Quote?.filter((item) => {
-      return (
-        item.Currency == currentCurrency.value &&
-        selectedYears.value.includes(item.Years)
-      );
-    })
-  );
+  return parseDate(props.company.DateSent);
 });
 
 const selectedDisplayQuote = computed(() => {
-  return _.get(quotes.value, selectedDisplay.value) || {};
+  return props.company.Quote?.filter((item) => {
+    return (
+      item.type === selectedDisplay.value &&
+      item.Currency == currentCurrency.value &&
+      selectedYears.value.includes(item.Years)
+    );
+  });
 });
 
 const otherQuetes = computed(() => {
-  let copy = { ...quotes.value };
-  delete copy?.[selectedDisplay.value];
-  return copy;
+  return _.groupBy(
+    props.company.Quote?.filter((item) => {
+      return (
+        item.type !== selectedDisplay.value &&
+        item.Currency === currentCurrency.value &&
+        selectedYears.value.includes(item.Years)
+      );
+    }),
+    'type'
+  );
 });
 
 watch(
@@ -57,17 +58,17 @@ watch(
     <TableSubRow
       :date="dateString"
       :company="company.Company"
-      :quote="selectedDisplayQuote"
+      :quotes="selectedDisplayQuote"
       @toggle="isOpen = !isOpen"
       :canToggle="true"
       :isOpen="isOpen"
     />
     <div v-if="isOpen">
       <TableSubRow
-        v-for="(quote, key) in otherQuetes"
+        v-for="(quotes, key) in otherQuetes"
         :key="key"
         :company="key"
-        :quote="quote"
+        :quotes="quotes"
       />
     </div>
   </div>

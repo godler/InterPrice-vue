@@ -1,19 +1,18 @@
-import collect from "collect.js";
-import { useStore } from "../composable/useStore";
-const { data } = useStore();
-export default function isMinimumQuoteValue(
-  value,
-  display,
-  year,
-  couponType
-) {
-  console.log(data);
+export default function isMinimumQuoteValue(quote, quotes) {
+  let quotes2 = quotes.filter((item) => {
+    return (
+      item.Currency == quote.Currency &&
+      item.Years == quote.Years &&
+      item.type == quote.type &&
+      item.CouponType == quote.CouponType &&
+      item.value !== null
+    );
+  });
 
   return (
-    value ==
-    collect(data)
-      .where("CouponType", couponType)
-      .where("Years", year)
-      .min(display)
+    quote.value ===
+    quotes2.reduce((prev, curr) => {
+      return curr.value < prev.value ? curr : prev;
+    }).value
   );
 }

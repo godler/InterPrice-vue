@@ -3,6 +3,7 @@ import { getData as getApiData } from "@/api/api";
 import pluckCurrencies from "@/utils/pluckCurrencies";
 import filterCompanies from "@/utils/filterCompanies";
 import pluckYears from "../utils/pluckYears";
+import parseData from "../utils/parseData";
 
 const data = ref();
 const currentCurrency = ref("USD");
@@ -14,13 +15,16 @@ const searchQuery = ref("");
 const currencies = ref([]);
 const selectedYears = ref([]);
 
-const displays = ref(['Spread', 'Yield', '3MLSpread']);
+const displays = ref(["Spread", "Yield", "3MLSpread"]);
 
-const selectedDisplay = ref('Spread');
+const selectedDisplay = ref("Spread");
 
 const getData = async () => {
-  data.value = await getApiData();
-  currencies.value = pluckCurrencies(data.value?.Items);
+  const rawData = await getApiData();
+
+  data.value = parseData(rawData.Items);
+
+ currencies.value = pluckCurrencies(data.value);
   selectedYears.value = [...years.value];
 };
 
@@ -32,17 +36,25 @@ const setCurrentCurrency = (currency) => {
 const companies = computed(() => {
   if (!data.value) return;
 
-  return filterCompanies(data.value.Items.filter((i)=>i.Quote), sortBy.value, searchQuery.value);
+  return filterCompanies(
+    data.value.filter((i) => i.Quote),
+    sortBy.value,
+    searchQuery.value
+  );
 });
 
 const noQuoteCompanies = computed(() => {
   if (!data.value) return;
 
-  return filterCompanies(data.value.Items.filter((i)=>!i.Quote), sortBy.value, searchQuery.value);
+  return filterCompanies(
+    data.value.filter((i) => !i.Quote),
+    sortBy.value,
+    searchQuery.value
+  );
 });
 
 const years = computed(() => {
-  return pluckYears(data.value?.Items, currentCurrency.value);
+  return pluckYears(data.value, currentCurrency.value);
 });
 
 const setSorting = (valueName) => {
@@ -60,14 +72,15 @@ const setSelectedYear = (year) => {
   const index = selectedYears.value.indexOf(year);
   if (index > -1) {
     selectedYears.value.splice(index, 1);
-  }else{
+  } else {
     selectedYears.value.push(year);
   }
+  console.log(selectedYears.value.sort((a,b)=>a-b));
 };
 
-const setDisplay = (displays)=>{
+const setDisplay = (displays) => {
   selectedDisplay.value = displays;
-}
+};
 
 export function useStore() {
   return {
