@@ -19,7 +19,7 @@ const columnValue = computed(() => {
     }
 
     if (props.quote?.type === "Yield") {
-      return props.quote?.value.toPrecision(4) + "%";
+      return props.quote?.value.toFixed(3) + "%";
     }
 
     return props.quote?.value;

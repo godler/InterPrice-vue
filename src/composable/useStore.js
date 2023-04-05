@@ -1,15 +1,15 @@
 import { ref, readonly, computed } from "vue";
 import { getData as getApiData } from "@/api/api";
-import pluckCurrencies from "@/utils/pluckCurrencies";
-import filterCompanies from "@/utils/filterCompanies";
+import pluckCurrencies from "../utils/pluckCurrencies";
+import filterCompanies from "../utils/filterCompanies";
 import pluckYears from "../utils/pluckYears";
 import parseData from "../utils/parseData";
 
 const data = ref();
 const currentCurrency = ref("USD");
 const sortBy = ref({
-  name: "DateSent",
-  order: "asc",
+  name: ["DateSent", "Preferred"],
+  order: ["asc", "asc"],
 });
 const searchQuery = ref("");
 const currencies = ref([]);
@@ -21,10 +21,8 @@ const selectedDisplay = ref("Spread");
 
 const getData = async () => {
   const rawData = await getApiData();
-
   data.value = parseData(rawData.Items);
-
- currencies.value = pluckCurrencies(data.value);
+  currencies.value = pluckCurrencies(data.value);
   selectedYears.value = [...years.value];
 };
 
@@ -75,7 +73,7 @@ const setSelectedYear = (year) => {
   } else {
     selectedYears.value.push(year);
   }
-  console.log(selectedYears.value.sort((a,b)=>a-b));
+  selectedYears.value.sort((a, b) => a - b);
 };
 
 const setDisplay = (displays) => {
