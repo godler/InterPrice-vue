@@ -23,9 +23,9 @@ const average = (year, couponType) => {
         quote.Currency === currentCurrency.value
       );
     })
-    .map((i) => i.value);
+    .map((i) => i.value).filter(n => n);
 
-    console.log( q.length);
+    console.log( q);
 
   let average = q.reduce((a, b) => a + b, 0) / q.length;
   if (!average) return;
