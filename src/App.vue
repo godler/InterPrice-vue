@@ -34,6 +34,8 @@ onMounted(async () => {
       />
       <TableAverage/>
     </Table>
+
+
   </div>
 </template>
 

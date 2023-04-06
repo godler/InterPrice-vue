@@ -2,6 +2,7 @@ import { ref, readonly, computed } from "vue";
 import { getData as getApiData } from "@/api/api";
 import pluckCurrencies from "../utils/pluckCurrencies";
 import filterCompanies from "../utils/filterCompanies";
+import sortCompanies from "../utils/sortCompanies";
 import pluckYears from "../utils/pluckYears";
 import parseData from "../utils/parseData";
 
@@ -34,20 +35,26 @@ const setCurrentCurrency = (currency) => {
 const companies = computed(() => {
   if (!data.value) return;
 
-  return filterCompanies(
-    data.value.filter((i) => i.Quote),
-    sortBy.value,
-    searchQuery.value
+  return sortCompanies(
+    filterCompanies(
+      data.value.filter((i) => i.Quote),
+      searchQuery.value
+    ),
+    sortBy.value.name,
+    sortBy.value.order
   );
 });
 
 const noQuoteCompanies = computed(() => {
   if (!data.value) return;
 
-  return filterCompanies(
-    data.value.filter((i) => !i.Quote),
-    sortBy.value,
-    searchQuery.value
+  return sortCompanies(
+    filterCompanies(
+      data.value.filter((i) => !i.Quote),
+      searchQuery.value
+    ),
+    sortBy.value.name,
+    sortBy.value.order
   );
 });
 

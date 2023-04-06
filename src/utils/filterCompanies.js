@@ -1,7 +1,13 @@
 import _ from "lodash";
 
-export default function filterCompanies(companies, sortBy, searchQuery) {
-    companies =_.orderBy(companies, sortBy.name, sortBy.order);
+export default function filterCompanies(companies, searchQuery) {
+  if (
+    companies === undefined ||
+    companies === null ||
+    !Array.isArray(companies)
+  ) {
+    throw new TypeError("Companies need to by array");
+  }
 
   if (searchQuery !== "") {
     companies = companies.filter((o) =>
@@ -11,3 +17,4 @@ export default function filterCompanies(companies, sortBy, searchQuery) {
 
   return companies;
 }
+  

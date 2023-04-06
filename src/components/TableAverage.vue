@@ -25,6 +25,8 @@ const average = (year, couponType) => {
     })
     .map((i) => i.value);
 
+    console.log( q.length);
+
   let average = q.reduce((a, b) => a + b, 0) / q.length;
   if (!average) return;
 
